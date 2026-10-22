@@ -24,10 +24,14 @@ jobs:
           $lib = Join-Path $base "lib"
           $bin = Join-Path $base "bin"
 
-          if (!(Test-Path "$include\mysql.h")) {
-            Get-ChildItem "$base\include" -Recurse -Filter mysql.h
-            throw "mysql.h not found"
-          }
+          $header = Get-ChildItem "$base\include" -Recurse -Filter mysql.h |
+  Select-Object -First 1
+
+if (!$header) {
+  throw "mysql.h not found in vcpkg include folders"
+}
+
+$include = $header.Directory.FullName
 
           $header = Get-ChildItem "$base\include" -Recurse -Filter mysql.h | Select-Object -First 1
           $include = $header.Directory.FullName
