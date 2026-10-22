@@ -1,0 +1,57 @@
+name: Build C++ Certificate Backend
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install MariaDB Connector
+        shell: pwsh
+        run: vcpkg install libmariadb:x64-windows
+
+      - name: Build backend
+        shell: pwsh
+        run: |
+          $root = $env:VCPKG_INSTALLATION_ROOT
+          $base = Join-Path $root "installed\x64-windows"
+          $include = Join-Path $base "include\mariadb"
+          $lib = Join-Path $base "lib"
+          $bin = Join-Path $base "bin"
+
+          if (!(Test-Path "$include\mysql.h")) {
+            Get-ChildItem "$base\include" -Recurse -Filter mysql.h
+            throw "mysql.h not found"
+          }
+
+          $header = Get-ChildItem "$base\include" -Recurse -Filter mysql.h | Select-Object -First 1
+          $include = $header.Directory.FullName
+
+          $library = Get-ChildItem "$lib" -Filter "*mariadb*.lib" | Select-Object -First 1
+          if (!$library) {
+            Get-ChildItem "$lib"
+            throw "MariaDB library not found"
+          }
+
+          cl /nologo /std:c++17 /EHsc /O2 "/I$include" backend\main.cpp "/link" "/LIBPATH:$lib" $library.Name ws2_32.lib "/OUT:certificate_backend.exe"
+
+          if ($LASTEXITCODE -ne 0) {
+            throw "Compilation failed"
+          }
+
+          $dll = Get-ChildItem "$bin" -Filter "*mariadb*.dll" | Select-Object -First 1
+          if (!$dll) { throw "MariaDB DLL not found" }
+          Copy-Item $dll.FullName .
+
+      - name: Upload executable
+        uses: actions/upload-artifact@v4
+        with:
+          name: certificate-backend-windows
+          path: |
+            certificate_backend.exe
+            *.dll
