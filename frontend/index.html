@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Certificate System</title><link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top"><div class="brand-mark">CS</div><div><p class="eyebrow">CERTIFICATE PORTAL</p><h1>Certificate System</h1></div><span class="status" id="apiStatus">Checking API…</span></header>
+<main>
+<section class="hero"><div><p class="eyebrow">CREATE · ISSUE · VERIFY</p><h2>Credentials you can verify.</h2><p>Issue course certificates and verify an existing certificate ID against the MySQL database.</p></div><div class="hero-icon" aria-hidden="true">✓</div></section>
+<div class="columns">
+<section class="panel"><div class="panel-head"><span class="step">01</span><div><h3>Issue a certificate</h3><p>Enter the certificate holder's details.</p></div></div>
+<form id="generateForm"><label for="student_name">Student name</label><input id="student_name" name="student_name" maxlength="100" required placeholder="e.g. Ayesha Khan">
+<label for="course_name">Course name</label><input id="course_name" name="course_name" maxlength="150" required placeholder="e.g. Full Stack Web Development">
+<label for="authorized_name">Authorized by</label><input id="authorized_name" name="authorized_name" maxlength="100" required placeholder="e.g. Training Coordinator">
+<button type="submit">Generate certificate <span>→</span></button><p class="message" id="generateMessage" role="status"></p></form>
+<div id="certificatePreview" class="certificate hidden"><div class="cert-inner"><p class="cert-label">CERTIFICATE OF COMPLETION</p><h2>Certificate</h2><p>This is proudly presented to</p><h3 id="certStudent"></h3><p>for successfully completing</p><h3 id="certCourse"></h3><p class="cert-date" id="certDate"></p><div class="signature"><span id="certAuth"></span><small>Authorized signature</small></div><p class="cert-id" id="certId"></p></div><button type="button" class="secondary" id="printCertificate">Print / Save as PDF</button></div>
+</section>
+<section class="panel"><div class="panel-head"><span class="step">02</span><div><h3>Verify a certificate</h3><p>Check whether an ID exists in the database.</p></div></div>
+<form id="verifyForm"><label for="certificateId">Certificate ID</label><input id="certificateId" name="id" required placeholder="e.g. CERT-1001"><button type="submit" class="dark">Verify certificate <span>→</span></button><p class="message" id="verifyMessage" role="status"></p></form>
+<div id="verifyResult" class="result hidden" aria-live="polite"></div>
+<div class="hint"><strong>Already have an ID?</strong><p>Try an existing ID from your <code>certificates</code> table, such as <code>CERT-1001</code>, if it exists in your data.</p></div>
+</section></div>
+<section class="notice"><strong>For your project demo</strong><p>Certificates generated here are stored in MySQL. Verification checks the database; it does not rely only on what is typed into the page.</p></section>
+</main><footer>Certificate System · C++ API + MySQL</footer><script src="app.js"></script>
+</body></html>
